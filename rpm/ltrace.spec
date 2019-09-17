@@ -1,11 +1,13 @@
 Name:       ltrace
 Summary:    ltrace intercepts and records dynamic library calls
-Version:    0
+Version:    0.8.0
 Release:    1
 Group:      Development Platform/Platform SDK
 License:    GPLv2+
-URL:        git://git.debian.org/git/collab-maint/ltrace.git
+URL:        https://gitlab.com/cespedes/ltrace/
 Source0:    ltrace-%{version}.tar.gz
+Patch0:     ltrace-0.7.91-tautology.patch
+Patch1:     ltrace-rh1423913.patch
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  binutils-devel
 BuildRequires:  elfutils-devel
@@ -14,7 +16,9 @@ BuildRequires:  elfutils-devel
 ltrace intercepts and records dynamic library calls which are called by an executed process and the signals received by that process. It can also intercept and print the system calls executed by the program.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{name}-%{version}/%{name}
+%patch0 -p1
+%patch1 -p1
 
 %build
 %autogen --disable-static
@@ -28,6 +32,6 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}
+%{_datadir}/ltrace
 %{_mandir}
 %{_docdir}
-%{_sysconfdir}
