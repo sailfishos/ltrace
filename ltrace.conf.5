@@ -1,5 +1,5 @@
 .\" -*-nroff-*-
-.\" Copyright (c) 2012 Petr Machata, Red Hat Inc.
+.\" Copyright (c) 2012, 2013 Petr Machata, Red Hat Inc.
 .\" Copyright (c) 1997-2005 Juan Cespedes <cespedes@debian.org>
 .\"
 .\" This program is free software; you can redistribute it and/or
@@ -30,8 +30,9 @@ Ltrace needs this information to display function call arguments.
 
 Each line of a configuration file describes at most a single item.
 Lines composed entirely of white space are ignored, as are lines
-starting with semicolon character (comment lines).  Described items
-can be either function prototypes, or definitions of type aliases.
+starting with semicolon or hash characters (comment lines).  Described
+items can be either function prototypes, or definitions of type
+aliases.
 
 .SH PROTOTYPES
 
@@ -39,12 +40,17 @@ A prototype describes return type and parameter types of a single
 function.  The syntax is as follows:
 
 .RS
-\fILENS\fR \fINAME\fR \fB(\fR[\fILENS\fR{,\fILENS\fR}]\fB);\fR
+[\fBfunction\fR] \fILENS\fR \fINAME\fR \fB(\fR[\fILENS\fR{,\fILENS\fR}]\fB);\fR
 .RE
 
 \fINAME\fR is the (mangled) name of a symbol.  In the elementary case,
 \fILENS\fR is simply a type.  Both lenses and types are described
-below.  For example, a simple function prototype might look like this:
+below.  The \fBfunction\fR keyword, if present, has no effect.  It can be
+used to force a line to be interpreted as a function prototype when the
+return type is a keyword that would start a different type of line
+(such as \fBimport\fR).
+
+For example, a simple function prototype might look like this:
 
 .RS
 .B int\fR kill\fB(int,int);
@@ -171,13 +177,16 @@ pointer to 256-bit bit vector.
 .RS
 The first form of the argument is canonical, the latter two are
 syntactic sugar.  In the canonical form, the function argument is
-formatted as string.  The \fITYPE\fR shall be either a \fBchar*\fR, or
-\fBarray(char,\fIEXPR\fB)\fR, or \fBarray(char,\fIEXPR\fB)*\fR.  If an
-array is given, the length will typically be a \fBzero\fR expression
-(but doesn't have to be).  Using argument that is plain array
-(i.e. not a pointer to array) makes sense e.g. in C structs, in cases
-like \fBstruct(string(array(char, \fR6\fB)))\fR, which describes the C
-type \fBstruct {char \fRs\fB[\fR6\fB];}\fR.
+formatted as string.  The \fITYPE\fR can have either of the following
+forms: \fIX\fB*\fR, or \fBarray(\fIX\fB,\fIEXPR\fB)\fR, or
+\fBarray(\fIX\fB,\fIEXPR\fB)*\fR.  \fIX\fR is either \fBchar\fR for
+normal strings, or an integer type for wide-character strings.
+
+If an array is given, the length will typically be a \fBzero\fR
+expression (but doesn't have to be).  Using argument that is plain
+array (i.e. not a pointer to array) makes sense e.g. in C structs, in
+cases like \fBstruct(string(array(char, \fR6\fB)))\fR, which describes
+the C type \fBstruct {char \fRs\fB[\fR6\fB];}\fR.
 
 Because simple C-like strings are pretty common, there are two
 shorthand forms.  The first shorthand form (with brackets) means the
@@ -218,10 +227,24 @@ such type, and later just use that name:
 \fBtypedef \fINAME\fB = \fILENS\fB;\fR
 .RE
 
+.SH IMPORT DIRECTIVES
+
+It's possible for config files to import definitions from other config
+files.  A line of the form:
+
+.RS
+\fBimport "\fIFILENAME\fB";\fR
+.RE
+
+will make all definitions from \fIFILENAME\fR.conf available in the current
+file.  The imported file is searched for in the same directories as when
+looking up a config file corresponding to a library; see \fBltrace(1)\fR
+for details.
+
 .SH RECURSIVE STRUCTURES
 
 Ltrace allows you to express recursive structures.  Such structures
-are expanded to the depth described by the parameter -A.  To declare a
+are expanded to the depth described by the parameter \-A.  To declare a
 recursive type, you first have to introduce the type to ltrace by
 using forward declaration.  Then you can use the type in other type
 definitions in the usual way:
@@ -401,7 +424,7 @@ ltrace configuration line.
 .br
 .B struct\fR S1 func_struct\fB(int \fRa\fB, struct \fRS2\fB, double \fRd\fB);
 .RS
-.B struct(float,char,char)\fR func_struct_2\fB(int, struct(string(array(char, \fR6\fB)),float), double);
+.B struct(float,char,char)\fR func_struct\fB(int, struct(string(array(char, \fR6\fB)),float), double);
 .RE
 
 .SH AUTHOR

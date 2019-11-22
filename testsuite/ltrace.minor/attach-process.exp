@@ -21,9 +21,11 @@ set bin [ltraceCompile {} [ltraceSource c {
     int main(void) {
 	sleep(5);
 	sleep(1);
+	return 0;
     }
 }]]
 
 spawn $bin
+sleep 1
 ltraceMatch1 [ltraceRun -S -p [exp_pid]] { sleep\(} == 1
 ltraceDone

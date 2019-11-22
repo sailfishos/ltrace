@@ -3,11 +3,14 @@
    clone called.
 
    This file was written by Yao Qi <qiyao@cn.ibm.com>.  */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <sched.h>
+#include <unistd.h>
 
 int child ()
 {
@@ -22,7 +25,8 @@ typedef int (* myfunc)();
 int main ()
 {
   pid_t pid;
-  static char stack[STACK_SIZE];
+  static __attribute__ ((aligned (16))) char stack[STACK_SIZE];
+
 #ifdef __ia64__
   pid = __clone2((myfunc)&child, stack, STACK_SIZE, CLONE_FS, NULL);
 #else

@@ -1,3 +1,4 @@
+# Copyright (C) 2015 Petr Machata, Red Hat Inc.
 # Copyright (C) 1992 - 2001 Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -38,7 +39,9 @@ BUILT_SOURCES = env.exp
 env.exp: Makefile
 	rm -f env.exp
 	echo set libelf_LD_LIBRARY_PATH '"$(libelf_LD_LIBRARY_PATH)"' >> $@
+	echo set elfutils_LD_LIBRARY_PATH '"$(elfutils_LD_LIBRARY_PATH)"' >> $@
 	echo set libunwind_LD_LIBRARY_PATH '"$(libunwind_LD_LIBRARY_PATH)"' >> $@
+	echo set PREFIX '"$(prefix)"' >> $@
 
 CLEANFILES = *.o *.so *.log *.sum *.ltrace site.bak setval.tmp site.exp env.exp
 
