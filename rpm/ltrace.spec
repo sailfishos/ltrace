@@ -4,7 +4,7 @@ Version:    0
 Release:    1
 Group:      Development Platform/Platform SDK
 License:    GPLv2+
-URL:        git://git.debian.org/git/collab-maint/ltrace.git
+URL:        https://gitlab.com/cespedes/ltrace/
 Source0:    ltrace-%{version}.tar.gz
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  binutils-devel
@@ -28,6 +28,6 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}
+%{_datadir}/ltrace
 %{_mandir}
 %{_docdir}
-%{_sysconfdir}
